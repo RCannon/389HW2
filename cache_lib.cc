@@ -42,23 +42,39 @@ Cache::Cache(Cache::size_type maxmem,
 void 
 Cache::set(key_type key, val_type val, size_type size)
 {
-  if (pImpl_->remmem_ - size > pImpl->maxmem_) return;
-  pImpl->remmem_ = pImpl->remmem_ - size;
-  auto x = pImpl->tbl_.insert_or_assign(key, std::make_pair(val,size));
+  if (pImpl_->remmem_ - size > pImpl_->maxmem_) return;
+  pImpl_->remmem_ = pImpl_->remmem_ - size;
+  auto x = pImpl_->tbl_.insert_or_assign(key, std::make_pair(val,size));
   return;
 }
 
 Cache::val_type
 get(key_type key, size_type& val_size) const
 {
-  if (pImpl->tabl_.at(key) = ) return nullptr;
-  std::pair res = pImpl->tabl_.at(key);
+  if (pImpl_->tabl_.at(key) = ) return nullptr;
+  std::pair res = pImpl_->tabl_.at(key);
   val_size = res.second;
   return res.first;
 }
 
-bool Cache::del(key_type key)
+bool 
+Cache::del(key_type key)
 {
-  if (pImpl->tabl_.erase(key)) return true;
-  return false 
+  if (pImpl_->tabl_.erase(key)) return true;
+  return false; 
 }
+
+Cache::size_type 
+Cache::space_used() const
+{
+  return pImpl_->remmem_;
+}
+
+void
+Cache::reset()
+{
+  pImpl_->tbl_.clear()
+  pImpl_->remmem_ = pImpl_->maxrem_;
+  return;
+}
+
