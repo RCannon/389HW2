@@ -8,7 +8,7 @@ class Cache::Impl
         float max_load_factor = 0.75,
         Evictor* evictor = nullptr,
         Cache::hash_func hasher = std::hash<key_type>());
-    ~Impl();
+    ~Impl() = default;
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;
 
@@ -35,6 +35,9 @@ Cache::Cache(Cache::size_type maxmem,
         Evictor* evictor,
         Cache::hash_func hasher)
         : pImpl_(new Cache::Impl(maxmem, max_load_factor, evictor, hasher))
+{}
+
+Cache::~Cache()
 {}
 
 void 

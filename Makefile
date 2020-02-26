@@ -1,13 +1,16 @@
 CXX=g++
 CXXFLAGS=-Wall -Wextra -pedantic -Werror -std=c++17 -g
 
-all: cache
+all: test_cache_lib
 
-cache: cache.o
-	$(CXX) $(CXXFLAGS) -o cache cache.o
+test_cache_lib: test_cache_lib.o cache_lib.o
+	$(CXX) $(CXXFLAGS) -o test_cache_lib test_cache_lib.o cache_lib.o
 
-cache.o: cache.cc cache.hh
-	$(CXX) $(CXXFLAGS) -c cache.cc
+test_cache_lib.o: test_cache_lib.cc cache.hh
+	$(CXX) $(CXXFLAGS) -c test_cache_lib.cc
+
+cache_lib.o: cache_lib.cc cache.hh
+	$(CXX) $(CXXFLAGS) -c cache_lib.cc
 	
 clean:
-	rm -rf *.o cache
+	rm -rf *.o test_cache_lib
