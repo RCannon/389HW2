@@ -68,7 +68,7 @@ Cache::del(key_type key)
 Cache::size_type 
 Cache::space_used() const
 {
-  return pImpl_->remmem_;
+  return pImpl->maxmem_ - pImpl_->remmem_;
 }
 
 void
