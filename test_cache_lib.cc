@@ -33,17 +33,16 @@ void test_set(){
     // testing that Cache::set(...) works and items can be retrieved unaltered
     c.set(key_1, val_1, val_1_size);
     c.set(key_2, val_2, val_2_size);
-    assert(c.get(key_1, val_1_size) == val_1);
-    assert(c.get(key_2, val_2_size) == val_2);
+    assert(strcmp(c.get(key_1, val_1_size), val_1) == 0);
+    assert(strcmp(c.get(key_2, val_2_size), val_2) == 0);
     // testing that Cache::set(k, ...) overwrites if k is already in the cache
     c.set(key_1, val_3, val_3_size);
-    assert(c.get(key_1, val_3_size) == val_3);
-    assert(c.get(key_1, val_2_size) != val_2);
+    assert(strcmp(c.get(key_1, val_3_size), val_3) == 0);
+    assert(strcmp(c.get(key_1, val_2_size), val_2) != 0);
     // testing that Cache::set(...) deep-copies values and keys (MISSING TEST FOR DEEP-COPIED VALUES)
-    // *val_1 = "6.28318";
-    // assert(c.get(key_1, val_1_size) != val_1);
+    assert(c.get(key_1, val_1_size) != val_1);
     key_2 = "Not Item 2";
-    assert(c.get("Item 2", val_2_size) == val_2);
+    assert(strcmp(c.get("Item 2", val_2_size), val_2) == 0);
 
 }
 void test_get(){
@@ -65,8 +64,8 @@ void test_get(){
     assert(c.get(key_2, val_2_size) == nullptr);
     // testing that Cache::get(...) retrieves the right pointer when the key is in the cache
     c.set(key_2, val_2, val_2_size);
-    assert(c.get(key_1, val_1_size) == val_1);
-    assert(c.get(key_2, val_2_size) == val_2);
+    assert(strcmp(c.get(key_1, val_1_size), val_1) == 0);
+    assert(strcmp(c.get(key_2, val_2_size), val_1) == 0);
     // note: missing test to ensure that get does not change the cache
 }
 void test_del(){
