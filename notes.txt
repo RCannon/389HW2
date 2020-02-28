@@ -1,1 +1,4 @@
 need to choose whether or not to delete evictor at destruction
+
+need to make sure fifo_evictor.evict() does not destroy element.
+if it does, use a vector

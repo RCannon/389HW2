@@ -43,9 +43,9 @@ Cache::~Cache()
 void 
 Cache::set(key_type key, Cache::val_type val, Cache::size_type size)
 {
-  if (pImpl_->remmem_ - size > pImpl_->maxmem_) 
+  while (pImpl_->remmem_ - size > pImpl_->maxmem_) 
   {
-    if !(evictor) return;
+    if (!evictor) return;
     return; /* to implement */
   }
   pImpl_->remmem_ = pImpl_->remmem_ - size;
