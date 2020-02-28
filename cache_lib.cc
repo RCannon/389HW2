@@ -1,5 +1,6 @@
 #include <utility>
 #include "cache.hh"
+#include "fifo_evictor.hh"
 
 class Cache::Impl 
 {
@@ -45,7 +46,8 @@ Cache::set(key_type key, Cache::val_type val, Cache::size_type size)
 {
   while (pImpl_->remmem_ - size > pImpl_->maxmem_) 
   {
-    if (!evictor) return;
+    if (!evictor_) return;
+    
     return; /* to implement */
   }
   pImpl_->remmem_ = pImpl_->remmem_ - size;
@@ -72,7 +74,7 @@ Cache::del(key_type key)
 Cache::size_type 
 Cache::space_used() const
 {
-  return pImpl->maxmem_ - pImpl_->remmem_;
+  return pImpl_->maxmem_ - pImpl_->remmem_;
 }
 
 void
