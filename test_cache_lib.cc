@@ -150,7 +150,7 @@ void test_default_evictor(){
     assert(c.get(key_3, val_3_size) == nullptr);
     c.del(key_1);
     c.set(key_3, val_3, val_3_size);
-    assert(c.get(key_3, val_3_size) != nullptr)
+    assert(c.get(key_3, val_3_size) != nullptr);
 }
 void test_fifo_evictor(){
     // Expected behavior for Cache::set when using a fifo evictor:
