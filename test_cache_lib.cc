@@ -11,8 +11,6 @@ using size_type = uint32_t;
  * But, the tests are still divided conceptually, to ensure that everything gets tested properly.
  */
 
-// Note: There may be errors with the equality checks in these tests, specifically whether the values need to be dereferenced first
-
 void test_set(){
     // Expected behavior for Cache::set(key_type key, val_type val, size_type size):
     // Add a <key, value> pair to the cache.
@@ -38,9 +36,9 @@ void test_set(){
     // testing that Cache::set(k, ...) overwrites if k is already in the cache
     c.set(key_1, val_3, val_3_size);
     assert(strcmp(c.get(key_1, val_3_size), val_3) == 0);
-    assert(strcmp(c.get(key_1, val_2_size), val_2) != 0);
-    // testing that Cache::set(...) deep-copies values and keys (MISSING TEST FOR DEEP-COPIED VALUES)
-    assert(c.get(key_1, val_1_size) != val_1);
+    assert(strcmp(c.get(key_1, val_1_size), val_1) != 0);
+    // testing that Cache::set deep_copies values and keys
+    assert(c.get(key_2, val_2_size) != val_2);
     key_2 = "Not Item 2";
     assert(strcmp(c.get("Item 2", val_2_size), val_2) == 0);
 
