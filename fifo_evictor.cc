@@ -7,11 +7,11 @@ Fifo_Evictor::touch_key(const key_type& key)
   keyq_.push(key);
 }
 
-const void key_type
+const key_type
 Fifo_Evictor::evict()
 {
   auto x = keyq_.front();
   keyq_.pop();
-  std:assert(x);
+  assert(x);
   return x;
 }
