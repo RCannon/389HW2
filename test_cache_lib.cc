@@ -16,9 +16,7 @@ void test_set(){
     // Add a <key, value> pair to the cache.
     // If key already exists, it will overwrite the old value.
     // Both the key and the value are to be deep-copied (not just pointer copied).
-    // If maxmem capacity is exceeded, enough values will be removed
-    // from the cache to accomodate the new value. If unable, the new value
-    // isn't inserted to the cache.
+    // Eviction rules are covered in later tests.
     Cache c = Cache(20);
     std::string key_1 = "Item 1";
     std::string key_2 = "Item 2";
@@ -37,9 +35,13 @@ void test_set(){
     c.set(key_1, val_3, val_3_size);
     assert(strcmp(c.get(key_1, val_3_size), val_3) == 0);
     assert(strcmp(c.get(key_1, val_1_size), val_1) != 0);
-    // testing that Cache::set deep_copies values and keys
-    assert(c.get(key_2, val_2_size) != val_2);
-    key_2 = "Not Item 2";
+    // testing that Cache::set deep-copies values
+    auto cval1 = c.get(key_2, val_2_size);
+    assert(cval1 != val_2);
+    c.set(key_2, val_2, val_2_size);
+    assert(c.get(key_2, val_2_size) != cval1);
+    // testing that Cache::set deep-copies keys
+    key_2.replace(0, key_2.length() + 1, key_1);
     assert(strcmp(c.get("Item 2", val_2_size), val_2) == 0);
 
 }
@@ -129,8 +131,12 @@ void test_reset(){
     assert(c.del(key_1) == false);
     assert(c.get(key_2, val_2_size) == nullptr);
 }
+// Evictor tests: these rules vary based on which evictor is used.
+// They all follow the same pattern, only being called when a new value is inserted with Cache::set(...):
+    // If maxmem capacity is exceeded, enough values will be removed
+    // from the cache to accomodate the new value. If unable, the new value
+    // isn't inserted to the cache.
 void test_default_evictor(){
-    // no promises made here by cache.hh
     // Expected behavior: set should silently fail if insufficient memory remains to store a given value
     Cache c = Cache(15);
     std::string key_1 = "Item 1";
