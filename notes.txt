@@ -4,3 +4,8 @@ need to make sure fifo_evictor.evict() does not destroy element.
 if it does, use a vector
 
 currently, cache::set does NOT deep-copy.
+RE: Deep copies, Eitan suggested that it wasn't possible to store them on the stack, so we'd need to store them on the heap.
+This means we'll need to put some thought into our destructor, as well as what happens when we delete or overwrite items in the cache.
+There's also a concern about what happens when we return a pointer in response to cache::get (what happens if someone tries to write over
+the memory at that address?) so it might be a good idea to deep-copy when returning from the cache as well. However, that might leave
+us in the position of needing to trust the user to free the memory after they're done with the pointer.
