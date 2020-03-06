@@ -38,8 +38,6 @@ void test_set(){
     // testing that Cache::set deep-copies values
     auto cval1 = c.get(key_2, val_2_size);
     assert(cval1 != val_2);
-    const char* bleh = "pi";
-    std::cout << "foo " << bleh << ' ' << val_2 << (bleh == val_2) << std::endl;
     c.set(key_1, val_2, val_2_size);
     assert(c.get(key_1, val_2_size) != cval1);
     // testing that Cache::set deep-copies keys
@@ -166,6 +164,30 @@ void test_fifo_evictor(){
     // enough space is freed to store the new value.
     // When attempting to store a value that is too large for the cache to store even with no other space used,
     // should fail silently without removing anything.
+    Cache c = Cache(15);
+    std::string key_1 = "Item 1";
+    std::string key_2 = "Item 2";
+    std::string key_3 = "Item 3";
+    const char *val_1 = "3.14159";
+    const char *val_2 = "pi";
+    const char *val_3 = "tau / 2";
+    size_type val_1_size = strlen(val_1) + 1;
+    size_type val_2_size = strlen(val_2) + 1;
+    size_type val_3_size = strlen(val_3) + 1;
+    c.set(key_1, val_1, val_1_size);
+    c.set(key_3, val_3, val_3_size);
+    c.set(key_2, val_2, val_2_size);
+    assert(c.get(key_1, val_1_size) == nullptr);
+    assert(c.get(key_2, val_2_size) != nullptr);
+    assert(c.get(key_3, val_3_size) != nullptr);
+    c.set(key_1, val_1, val_1_size);
+    assert(c.get(key_3, val_3_size) == nullptr);
+    assert(c.get(key_1, val_1_size) != nullptr);
+    assert(c.get(key_2, val_2_size) != nullptr);
+    c.set(key_1, val_1, val_1_size);
+    assert(c.get(key_1, val_1_size) != nullptr);
+    assert(c.get(key_2, val_2_size) == nullptr);
+    assert(c.get(key_3, val_3_size) == nullptr);
 }
 
 

@@ -95,7 +95,6 @@ Cache::Impl::get(key_type key, Cache::size_type& val_size) const
   if (tbl_.find(key) == tbl_.end()) return nullptr;
   std::pair res = tbl_.at(key);
   val_size = res.second;
-  std::cout << res.first << std::endl;
   return res.first;
 }
 
