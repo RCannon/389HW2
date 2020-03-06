@@ -1,5 +1,7 @@
 #include <utility>
 #include <cassert>
+#include <string.h>
+#include <iostream>
 #include "cache.hh"
 #include "fifo_evictor.hh"
 
@@ -18,7 +20,7 @@ class Cache::Impl
         float max_load_factor = 0.75,
         Evictor* evictor = nullptr,
         Cache::hash_func hasher = std::hash<key_type>());
-    ~Impl() = default;
+    ~Impl();
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;
     void set(key_type key, Cache::val_type val, Cache::size_type size);
@@ -45,14 +47,25 @@ Cache::Cache(Cache::size_type maxmem,
         : pImpl_(new Cache::Impl(maxmem, max_load_factor, evictor, hasher))
 {}
 
+Cache::Impl::~Impl()
+{
+  for (auto it = tbl_.begin(); it != tbl_.end(); it++)
+  {
+    delete[] it->second.first;
+  }
+}
+
 Cache::~Cache()
-{}
+{
+  pImpl_->~Impl();
+}
 
 void 
 Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
 {
+  assert(key != ""); /* key cant be empty string */
   if (size > maxmem_) return; 
-  assert(size != 0); /* remove if necessary - and remove assert in del */
+  /*assert(size != 0);  remove if necessary - and remove assert in del */
   if (remmem_ - size <= 0)
   {
     if (evictor_ == nullptr) return;
@@ -62,11 +75,17 @@ Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
       while (remmem_ - size <= 0) 
       {
         evictKey = evictor_->evict();
-        assert(del(evictKey)); 
+        if (evictKey != "") del(evictKey); 
       }
     }
   }
-  tbl_.insert_or_assign(key, std::make_pair(val,size));
+  del(key);
+  Cache::byte_type* theVal = new Cache::byte_type[size]; /*assume user includes space for 0 termination */
+  std::copy(val,val+size, theVal);
+  tbl_[key] = std::make_pair(theVal,size);
+  remmem_ -= size;
+  if (!evictor_) return;
+  evictor_->touch_key(key);
   return;
 }
 
@@ -76,18 +95,22 @@ Cache::Impl::get(key_type key, Cache::size_type& val_size) const
   if (tbl_.find(key) == tbl_.end()) return nullptr;
   std::pair res = tbl_.at(key);
   val_size = res.second;
+  std::cout << res.first << std::endl;
   return res.first;
 }
 
 bool 
 Cache::Impl::del(key_type key)
 {
-  Cache::size_type size = tbl_.at(key).second;
+  auto val = tbl_.find(key);
+  if (val == tbl_.end()) return false;
+  auto size = val->second.second;
+  delete[] val->second.first;
   if (tbl_.erase(key))
   {
-    auto beforeRemmem = remmem_;
+    /*auto beforeRemmem = remmem_; */
     remmem_ += size;
-    assert(beforeRemmem > remmem_);
+    /*assert(beforeRemmem > remmem_);*/
     assert(remmem_ <= maxmem_);
     return true;
   }
@@ -103,6 +126,10 @@ Cache::Impl::space_used() const
 void
 Cache::Impl::reset()
 {
+  for (auto it = tbl_.begin(); it != tbl_.end(); it++)
+  {
+    delete[] it->second.first;
+  }
   tbl_.clear();
   remmem_ = maxmem_;
   return;

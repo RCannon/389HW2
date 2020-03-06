@@ -38,8 +38,10 @@ void test_set(){
     // testing that Cache::set deep-copies values
     auto cval1 = c.get(key_2, val_2_size);
     assert(cval1 != val_2);
-    c.set(key_2, val_2, val_2_size);
-    assert(c.get(key_2, val_2_size) != cval1);
+    const char* bleh = "pi";
+    std::cout << "foo " << bleh << ' ' << val_2 << (bleh == val_2) << std::endl;
+    c.set(key_1, val_2, val_2_size);
+    assert(c.get(key_1, val_2_size) != cval1);
     // testing that Cache::set deep-copies keys
     key_2.replace(0, key_2.length() + 1, key_1);
     assert(strcmp(c.get("Item 2", val_2_size), val_2) == 0);
@@ -65,7 +67,7 @@ void test_get(){
     // testing that Cache::get(...) retrieves the right pointer when the key is in the cache
     c.set(key_2, val_2, val_2_size);
     assert(strcmp(c.get(key_1, val_1_size), val_1) == 0);
-    assert(strcmp(c.get(key_2, val_2_size), val_1) == 0);
+    assert(strcmp(c.get(key_2, val_2_size), val_2) == 0);
     // note: missing test to ensure that get does not change the cache
 }
 void test_del(){
