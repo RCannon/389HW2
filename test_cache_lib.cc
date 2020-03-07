@@ -1,4 +1,6 @@
 #include "cache.hh"
+#include "fifo_evictor.hh"
+#include "lru_evictor.hh"
 #include <cassert>
 #include <iostream>
 #include <cstring>
@@ -189,7 +191,43 @@ void test_fifo_evictor(){
     assert(c.get(key_2, val_2_size) == nullptr);
     assert(c.get(key_3, val_3_size) == nullptr);
 }
-
+void test_lru_evictor(){
+    // Expected behavior for Cache::set when using an lru evictor:
+    // When not enough memory remains to store a value, items least recently touched will be thrown out until
+    // enough space is freed to store the new value.
+    // When attempting to store a value that is too large for the cache to store even with no other space used,
+    // should fail silently without removing anything.
+    Cache c = Cache(20);
+    std::string key_1 = "Item 1";
+    std::string key_2 = "Item 2";
+    std::string key_3 = "Item 3";
+    std::string key_4 = "Item 4";
+    const char *val_1 = "3.14159";
+    const char *val_2 = "pi";
+    const char *val_3 = "tau / 2";
+    const char *val_4 = "12345";
+    size_type val_1_size = strlen(val_1) + 1;
+    size_type val_2_size = strlen(val_2) + 1;
+    size_type val_3_size = strlen(val_3) + 1;
+    size_type val_4_size = strlen(val_4) + 1;
+    c.set(key_1, val_1, val_1_size);
+    c.set(key_2, val_2, val_2_size);
+    c.set(key_3, val_3, val_3_size);
+    c.set(key_4, val_4, val_4_size);
+    assert(c.get(key_4, val_4_size) != nullptr);
+    assert(c.get(key_1, val_1_size) == nullptr);
+    assert(c.get(key_2, val_2_size) != nullptr);
+    assert(c.get(key_3, val_3_size) != nullptr);
+    c.set(key_1, val_1, val_1_size);
+    assert(c.get(key_3, val_3_size) != nullptr);
+    assert(c.get(key_1, val_1_size) != nullptr);
+    assert(c.get(key_2, val_2_size) != nullptr);
+    assert(c.get(key_4, val_4_size) == nullptr);
+    c.set(key_1, val_1, val_1_size);
+    assert(c.get(key_1, val_1_size) != nullptr);
+    assert(c.get(key_2, val_2_size) == nullptr);
+    assert(c.get(key_3, val_3_size) == nullptr);
+}
 
 int main(){
     /*
@@ -208,6 +246,10 @@ int main(){
     std::cout << "Passed tests for Cache::reset" << std::endl;
     test_default_evictor();
     std::cout << "Passed tests for default evictor" << std::endl;
+    test_fifo_evictor();
+    std::cout << "Passed tests for fifo evictor" << std::endl;
+    test_lru_evictor();
+    std::cout << "Passed tests for lru evictor" << std::endl;
     std::cout << "All unit tests passed!" << std::endl;
     return 0;
 }
