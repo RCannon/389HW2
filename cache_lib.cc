@@ -53,6 +53,9 @@ Cache::Impl::~Impl()
   {
     delete[] it->second.first;
   }
+  if (evictor_ != nullptr){
+    evictor_->~Evictor();
+  }
 }
 
 Cache::~Cache()
