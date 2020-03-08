@@ -67,29 +67,30 @@ void
 Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
 {
   assert(key != ""); /* key cant be empty string */
+  del(key);
   if (size > maxmem_) return; 
   /*assert(size != 0);  remove if necessary - and remove assert in del */
-  if (remmem_ - size <= 0)
+  if (remmem_ - size < 0) // was <=
   {
     if (evictor_ == nullptr) return;
     else
     {
       key_type evictKey;
-      while (remmem_ - size <= 0) 
+      while (remmem_ - size < 0) // was <=
       {
         evictKey = evictor_->evict();
-        std::cout << "evicting " << evictKey << std::endl;
+        // std::cout << "evicting " << evictKey << std::endl;
         if (evictKey != "") del(evictKey); 
       }
     }
   }
-  del(key);
+  // del(key);
   Cache::byte_type* theVal = new Cache::byte_type[size]; /*assume user includes space for 0 termination */
   std::copy(val,val+size, theVal);
   tbl_[key] = std::make_pair(theVal,size);
   remmem_ -= size;
   if (!evictor_) return;
-  std::cout << "touching " << key << std::endl;
+  // std::cout << "touching " << key << std::endl;
   evictor_->touch_key(key);
   return;
 }
@@ -99,8 +100,8 @@ Cache::Impl::get(key_type key, Cache::size_type& val_size) const
 {
   if (tbl_.find(key) == tbl_.end()) return nullptr;
   std::pair res = tbl_.at(key);
+  // if (evictor_) std::cout << "touching " << key << std::endl;
   if (evictor_) evictor_->touch_key(key);
-  std::cout << "touching " << key << std::endl;
   val_size = res.second;
   return res.first;
 }
