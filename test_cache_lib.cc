@@ -166,7 +166,8 @@ void test_fifo_evictor(){
     // enough space is freed to store the new value.
     // When attempting to store a value that is too large for the cache to store even with no other space used,
     // should fail silently without removing anything.
-    Cache c = Cache(15);
+    Evictor* fifo = new Fifo_Evictor();
+    Cache c = Cache(15, 0.75, fifo);
     std::string key_1 = "Item 1";
     std::string key_2 = "Item 2";
     std::string key_3 = "Item 3";
@@ -179,7 +180,7 @@ void test_fifo_evictor(){
     c.set(key_1, val_1, val_1_size);
     c.set(key_3, val_3, val_3_size);
     c.set(key_2, val_2, val_2_size);
-    assert(c.get(key_1, val_1_size) == nullptr);
+    assert(c.get(key_1, val_1_size) == nullptr); 
     assert(c.get(key_2, val_2_size) != nullptr);
     assert(c.get(key_3, val_3_size) != nullptr);
     c.set(key_1, val_1, val_1_size);
@@ -197,7 +198,8 @@ void test_lru_evictor(){
     // enough space is freed to store the new value.
     // When attempting to store a value that is too large for the cache to store even with no other space used,
     // should fail silently without removing anything.
-    Cache c = Cache(20);
+    Evictor* lru = new LRU_Evictor();
+    Cache c = Cache(20, 0.75, lru);
     std::string key_1 = "Item 1";
     std::string key_2 = "Item 2";
     std::string key_3 = "Item 3";
@@ -219,7 +221,7 @@ void test_lru_evictor(){
     assert(c.get(key_2, val_2_size) != nullptr);
     assert(c.get(key_3, val_3_size) != nullptr);
     c.set(key_1, val_1, val_1_size);
-    assert(c.get(key_3, val_3_size) != nullptr);
+    assert(c.get(key_3, val_3_size) == nullptr); //
     assert(c.get(key_1, val_1_size) != nullptr);
     assert(c.get(key_2, val_2_size) != nullptr);
     assert(c.get(key_4, val_4_size) == nullptr);

@@ -60,7 +60,7 @@ Cache::Impl::~Impl()
 
 Cache::~Cache()
 {
-  pImpl_->~Impl();
+  //pImpl_->~Impl();
 }
 
 void 
@@ -78,6 +78,7 @@ Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
       while (remmem_ - size <= 0) 
       {
         evictKey = evictor_->evict();
+        std::cout << "evicting " << evictKey << std::endl;
         if (evictKey != "") del(evictKey); 
       }
     }
@@ -88,6 +89,7 @@ Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
   tbl_[key] = std::make_pair(theVal,size);
   remmem_ -= size;
   if (!evictor_) return;
+  std::cout << "touching " << key << std::endl;
   evictor_->touch_key(key);
   return;
 }
@@ -97,6 +99,8 @@ Cache::Impl::get(key_type key, Cache::size_type& val_size) const
 {
   if (tbl_.find(key) == tbl_.end()) return nullptr;
   std::pair res = tbl_.at(key);
+  if (evictor_) evictor_->touch_key(key);
+  std::cout << "touching " << key << std::endl;
   val_size = res.second;
   return res.first;
 }

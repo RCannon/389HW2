@@ -13,8 +13,8 @@ struct Node
 
 class LList{
   public:
-  Node *root_;
-  Node *back_;
+  Node *root_ = nullptr;
+  Node *back_ = nullptr;
   LList() { 
       root_ = nullptr;
       back_ = nullptr;
