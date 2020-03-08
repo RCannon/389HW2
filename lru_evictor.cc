@@ -1,5 +1,6 @@
 #include "lru_evictor.hh"
 #include <cassert>
+#include <iostream>
 
 LRU_Evictor::LRU_Evictor()
   : LL_(new LList())
@@ -21,15 +22,43 @@ LRU_Evictor::touch_key(const key_type& key)
         assert(LL_->back_ != nullptr);
         assert(LL_->root_ != nullptr);
         Node* N = it->second;
-        if (N->prev_ != nullptr) N->prev_->next_ = N->next_;
-        if ((LL_->root_ == N) && (N->next_ != nullptr)) LL_->root_ = N->next_;
-        if (N->next_ != nullptr) N->next_->prev_ = N->prev_;
-        if (LL_->back_ != N) N->prev_ = LL_->back_;
-        assert(LL_->back_ != nullptr);
-        LL_->back_->next_ = N;
-        N->next_ = nullptr;
-        LL_->back_ = N;
+        if (LL_->back_ != N){
+            if (LL_->root_ == N) {
+                LL_->root_ = N->next_;
+            } else {
+                N->prev_->next_ = N->next_;
+            }
+            N->next_->prev_ = N->prev_;
+            LL_->back_->next_ = N;
+            N->prev_ = LL_->back_;
+            LL_->back_ = N;
+            N->next_ = nullptr;
+        }
     }
+    /* testing code: prints the LL structure after each touch*/
+    
+    // std::cout << "Forward pass: " << std::endl;
+    // Node* fp = LL_->root_;
+    // while (fp != nullptr) {
+    //     std::cout << fp->key;
+    //     fp = fp->next_;
+    //     if (fp != nullptr){
+    //         std::cout << "->";
+    //     }
+    // }
+    // int ctr = 0;
+    // std::cout << std::endl;
+    // std::cout << "Backwards pass: " << std::endl;
+    // Node* rp = LL_->back_;
+    // while (rp != nullptr && ctr < 12) {
+    //     std::cout << rp->key;
+    //     rp = rp->prev_;
+    //     if (rp != nullptr){
+    //         std::cout << "->";
+    //     }
+    //     ctr++;
+    // }
+    // std::cout << std::endl;
 }
 const key_type
 LRU_Evictor::evict()
