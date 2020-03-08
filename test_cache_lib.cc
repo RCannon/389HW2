@@ -138,6 +138,7 @@ void test_reset(){
     // If maxmem capacity is exceeded, enough values will be removed
     // from the cache to accomodate the new value. If unable, the new value
     // isn't inserted to the cache.
+    // Note that in the case of an overwrite, the old value is removed before calling the evictor.
 void test_default_evictor(){
     // Expected behavior: set should silently fail if insufficient memory remains to store a given value
     Cache c = Cache(15);
