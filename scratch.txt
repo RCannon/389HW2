@@ -1,0 +1,102 @@
+    // LList(const Cache&) = delete;
+    // LList& operator=(const LList&) = delete;
+
+    // void create(key_type key)
+    // {
+    //     if (back_ == nullptr) 
+    //     { 
+    //       root_ = std::make_shared(Node({key, nullptr, nullptr}));
+    //       back_ = root_;
+    //     }
+    //     else 
+    //     {
+    //       npoint nnode = std::make_shared(Node({key, nullptr, nullptr}));
+    //       nnode->next_ = root_->next_;
+    //       root_->next_->prev_ = nnode;
+    //       root_ = nnode;
+    //     }
+    //     return;
+    // }
+
+    // void replace(npoint nnode)
+    // {
+    //   assert(nnode != nullptr);
+    //   if (nnode.prev_ == nullptr) return;
+    //   if (nnode->next_ == nullptr)
+    //   {
+    //     nnode->prev_->next_ = nullptr;
+    //     back_ = nnode->prev_;
+    //   }
+    //   else
+    //   {
+    //     nnode->prev_->next_ = nnode->next_;
+    //     nnode->next_->prev_ = nnode->prev_
+    //   }
+    //   nnode->prev_ = nullptr;
+    //   nnode->next_ = root_->next_;
+    //   root_ = nnode;
+    //   return;
+    // }
+
+    // npoint get()
+    // {
+    //   npoint nnode = back_;
+    //   nnode->prev_next_ = nullptr;
+    //   back_ = nnode->prev_;
+    //   return nnode; // maybe return just the key instead
+
+
+
+    /* testing code: prints the LL structure after each touch*/
+    
+    // std::cout << "Forward pass: " << std::endl;
+    // Node* fp = LL_->root_;
+    // while (fp != nullptr) {
+    //     std::cout << fp->key_;
+    //     fp = fp->next_;
+    //     if (fp != nullptr){
+    //         std::cout << "->";
+    //     }
+    // }
+    // int ctr = 0;
+    // std::cout << std::endl;
+    // std::cout << "Backwards pass: " << std::endl;
+    // Node* rp = LL_->back_;
+    // while (rp != nullptr && ctr < 12) {
+    //     std::cout << rp->key_;
+    //     rp = rp->prev_;
+    //     if (rp != nullptr){
+    //         std::cout << "->";
+    //     }
+    //     ctr++;
+    // }
+    // std::cout << std::endl;
+
+
+
+
+  /*for (auto it = map_.begin(); it != map_.end(); it++)
+  {
+    std::cout << it->second->key_ << std::endl;
+    delete it->second;
+  }
+  Node* n = LL_->root_;
+  if (n == nullptr) 
+  {
+    delete LL_;
+    return;
+  }
+  assert(LL_->back_ != nullptr);
+  while (n->next_ != nullptr)
+  {
+    n = n->next_;
+    delete n->next_->prev_;
+  }
+  delete n;*/
+
+
+/*Fifo_Evictor::~Fifo_Evictor()
+{
+  while (!keyq_.empty()) keyq_.pop();
+}*/
+

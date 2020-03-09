@@ -6,7 +6,7 @@
 class LRU_Evictor : public Evictor {
   private:
     LList* LL_;
-    std::unordered_map<key_type, Node*> map_;
+    std::unordered_map<key_type, std::shared_ptr<Node>> map_;
   public:
     LRU_Evictor();
     ~LRU_Evictor();

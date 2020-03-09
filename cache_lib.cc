@@ -1,4 +1,5 @@
 #include <utility>
+#include <memory>
 #include <cassert>
 #include <string.h>
 #include <iostream>
@@ -40,6 +41,12 @@ Cache::Impl::Impl(Cache::size_type maxmem,
   tbl_.max_load_factor(max_load_factor_);
 }
 
+  // Create a new cache object with the following parameters:
+  // maxmem: The maximum allowance for storage used by values.
+  // max_load_factor: Maximum allowed ratio between buckets and table rows.
+  // evictor: Eviction policy implementation (if nullptr, no evictions occur
+  // and new insertions fail after maxmem has been exceeded).
+  // hasher: Hash function to use on the keys. Defaults to C++'s std::hash.
 Cache::Cache(Cache::size_type maxmem,
         float max_load_factor,
         Evictor* evictor,
@@ -54,23 +61,26 @@ Cache::Impl::~Impl()
     delete[] it->second.first;
   }
   if (evictor_ != nullptr){
-    evictor_->~Evictor();
+    delete evictor_;
   }
 }
 
-Cache::~Cache()
-{
-  //pImpl_->~Impl();
-}
+Cache::~Cache(){}
 
+
+  // Add a <key, value> pair to the cache.
+  // If key already exists, it will overwrite the old value.
+  // Both the key and the value are to be deep-copied (not just pointer copied).
+  // If maxmem capacity is exceeded, enough values will be removed
+  // from the cache to accomodate the new value. If unable, the new value
+  // isn't inserted to the cache.
 void 
 Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
 {
   assert(key != ""); /* key cant be empty string */
   del(key);
   if (size > maxmem_) return; 
-  /*assert(size != 0);  remove if necessary - and remove assert in del */
-  if (remmem_ - size < 0) // was <=
+  if (remmem_ - size < 0)
   {
     if (evictor_ == nullptr) return;
     else
@@ -79,33 +89,35 @@ Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
       while (remmem_ - size < 0) // was <=
       {
         evictKey = evictor_->evict();
-        // std::cout << "evicting " << evictKey << std::endl;
         if (evictKey != "") del(evictKey); 
       }
     }
   }
-  // del(key);
   Cache::byte_type* theVal = new Cache::byte_type[size]; /*assume user includes space for 0 termination */
   std::copy(val,val+size, theVal);
   tbl_[key] = std::make_pair(theVal,size);
   remmem_ -= size;
   if (!evictor_) return;
-  // std::cout << "touching " << key << std::endl;
   evictor_->touch_key(key);
   return;
 }
 
+
+  // Retrieve a pointer to the value associated with key in the cache,
+  // or nullptr if not found.
+  // Sets the actual size of the returned value (in bytes) in val_size.
 Cache::val_type
 Cache::Impl::get(key_type key, Cache::size_type& val_size) const
 {
   if (tbl_.find(key) == tbl_.end()) return nullptr;
   std::pair res = tbl_.at(key);
-  // if (evictor_) std::cout << "touching " << key << std::endl;
   if (evictor_) evictor_->touch_key(key);
   val_size = res.second;
   return res.first;
 }
 
+
+  // Delete an object from the cache, if it's still there
 bool 
 Cache::Impl::del(key_type key)
 {
@@ -115,21 +127,21 @@ Cache::Impl::del(key_type key)
   delete[] val->second.first;
   if (tbl_.erase(key))
   {
-    /*auto beforeRemmem = remmem_; */
     remmem_ += size;
-    /*assert(beforeRemmem > remmem_);*/
     assert(remmem_ <= maxmem_);
     return true;
   }
   return false; 
 }
 
+  // Compute the total amount of memory used up by all cache values (not keys)
 Cache::size_type 
 Cache::Impl::space_used() const
 {
   return maxmem_ - remmem_;
 }
 
+  // Delete all data from the cache
 void
 Cache::Impl::reset()
 {
