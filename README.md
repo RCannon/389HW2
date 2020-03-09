@@ -11,7 +11,9 @@ We implemented Cache::del(key), Cache::set(key), and Cache::get(key) using the s
 
 Part 2: Testing
 
-We put all of our tests into test_cache_lib.cc, which runs a series of smaller test scripts to put each method and feature promised in cache.hh through its paces. Each method has its own separate routine to keep the tests simple and ensure that they're complete. Our tests all use cstrings as data, but the methods tested will work for any data type.
+We put all of our tests into test_cache_lib.cc, which runs a series of smaller test scripts to put each method and feature promised in cache.hh through its paces. Each method has its own separate routine to keep the tests simple and ensure that they're complete. Our tests all use cstrings as data, but the methods tested will work for any data type. 
+
+Please note that test_fifo_evictor.cc is out of date with the current implementation and is not used for any of our tests.
 
 Part 3: Performance
 
