@@ -1,3 +1,8 @@
+/*
+ * Implementation of a FIFO (First In, First Out) evictor for use in a cache following the patterns in cache.hh
+ * Stores values in a standard library queue, pushing values to the back when touched and popping values from when evicting.
+ */
+
 #include "fifo_evictor.hh"
 #include <cassert>
  

@@ -1,3 +1,11 @@
+/*
+ * Originally part of multi-file testing design that we decided to scrap.
+ * Code from this file made it into test_cache_lib.cc, but this file isn't used in any test
+ * and the tests in here don't work for the current version of the code.
+ */
+
+
+
 #include "cache.hh"
 #include <cassert>
 #include <iostream>

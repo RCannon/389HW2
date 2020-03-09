@@ -1,3 +1,7 @@
+/*
+ * Implementaion for promised interface in cache.hh
+ * Uses the pImpl idiom to hide details from the user.
+ */
 #include <utility>
 #include <memory>
 #include <cassert>
@@ -70,15 +74,15 @@ Cache::~Cache(){}
 
   // Add a <key, value> pair to the cache.
   // If key already exists, it will overwrite the old value.
-  // Both the key and the value are to be deep-copied (not just pointer copied).
+  // Both the key and the value are deep-copied.
   // If maxmem capacity is exceeded, enough values will be removed
   // from the cache to accomodate the new value. If unable, the new value
-  // isn't inserted to the cache.
+  // isn't inserted to the cache and no values are removed.
 void 
 Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
 {
   assert(key != ""); /* key cant be empty string */
-  del(key);
+  del(key); // prevents unnecessary eviction in the case of an overwrite.
   if (size > maxmem_) return; 
   if (remmem_ - size < 0)
   {
@@ -86,14 +90,14 @@ Cache::Impl::set(key_type key, Cache::val_type val, Cache::size_type size)
     else
     {
       key_type evictKey;
-      while (remmem_ - size < 0) // was <=
+      while (remmem_ - size < 0)
       {
         evictKey = evictor_->evict();
         if (evictKey != "") del(evictKey); 
       }
     }
   }
-  Cache::byte_type* theVal = new Cache::byte_type[size]; /*assume user includes space for 0 termination */
+  Cache::byte_type* theVal = new Cache::byte_type[size]; /*assumes user includes space for 0 termination if passing a string */
   std::copy(val,val+size, theVal);
   tbl_[key] = std::make_pair(theVal,size);
   remmem_ -= size;

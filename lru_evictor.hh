@@ -1,3 +1,8 @@
+/*
+ * Declarations for an LRU (Least Recently Used) evictor according to the pattern in evictor.hh
+ * For use in a cache according to the pattern in cache.hh
+ */
+
 #pragma once
 #include "evictor.hh"
 #include "LList.hh"

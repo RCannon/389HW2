@@ -1,3 +1,9 @@
+/*
+ * Declarations for a FIFO (First In, First Out) evictor, according to the pattern in evictor.hh
+ * for use in a cache according to the pattern in cache.hh
+ */
+
+
 #pragma once
 #include "evictor.hh"
 #include <queue>

@@ -1,9 +1,12 @@
+/*
+ * Declarations for linked list and node classes, for use in LRU evictor.
+ */
+
 #pragma once
 #include "evictor.hh"
 #include "cache.hh"
 #include <memory>
 #include <cassert>
-// using npoint = Node *;
 class Node 
 {
   public:

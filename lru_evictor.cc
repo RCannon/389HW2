@@ -1,3 +1,11 @@
+/*
+ * Implementation of an LRU_Evictor according to the declarations in lru_evictor.hh
+ * Stores keys as nodes in a doubly linked list, moving keys to the back when touched
+ * and taking keys from the front when needed for eviction.
+ * Stores pointers to each node in an unordered map so that the list can be effectively searched and accessed in constant time.
+ */
+
+
 #include "lru_evictor.hh"
 #include <cassert>
 #include <iostream>
@@ -9,6 +17,7 @@ LRU_Evictor::LRU_Evictor()
 
 void
 LRU_Evictor::touch_key(const key_type& key)
+// Inserts a new key to the back of the linked list, or moves an old key to the back
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
@@ -39,6 +48,7 @@ LRU_Evictor::touch_key(const key_type& key)
 }
 const key_type
 LRU_Evictor::evict()
+// returns the front element of the linked list and removes it from the unordered map
 {
   if (LL_->root_ != nullptr){
     std::shared_ptr<Node> N = LL_->root_;
@@ -54,6 +64,8 @@ LRU_Evictor::evict()
 }
 
 LRU_Evictor::~LRU_Evictor()
+// destructor needs to delete all the pointers going in one direction in the linked list
+// to prevent mutual ownership between nodes, which prevents automatic deallocation by shared pointers since neither can deallocate the other.
 {
   std::shared_ptr<Node> n = LL_->root_;
   if (n == nullptr) 

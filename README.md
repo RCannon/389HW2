@@ -2,19 +2,26 @@ CSCI 389 HW2
 
 Authors: Reilly Cannon and James McCaull
 
-This github repo should include all of the required files for this assignment, as well as the extra credit LRU Evictor files, all of which should be functioning. 
+This repository contains all the required files for this assignment, as well as the extra credit LRU Evictor files. We've included a makefile to make compiling our testing file (test_cache_lib) easier.
 
-We placed our tests for each part of this assignment into the test_cache_lib.cc file. To run this test file, construct test_cache_lib.exe using the included Makefile. 
+Part 1: basic cache operations
+We implemented Cache::del(key), Cache::set(key), and Cache::get(key) using the stl unordered_map container to make lookup, insertion and deletion constant time. The map also handles dynamic resizing for us by default (which still leaves us with constant amortized runtime of set).
 
-We utilized the standard template library unordered_map container throughout this project, and we used its various methods extensively in each part. This helped us ensure that all operations run in asymptotically constant time, as requested. 
+Part 2: Testing
+We put all of our tests into test_cache_lib.cc, which runs a series of smaller test scripts to put each method and feature promised in cache.hh through its paces. Each method has its own separate routine to keep the tests simple and ensure that they're complete. Our tests all use cstrings as data, but the methods tested will work for any data type.
 
-Collision resolution is handled natively by the unordered_map. We chose to stick with the native implementation because it is simplier and most likely better performing and less bug-ridden than anything we could write.
+Part 3: Performance
+Using an unordered_map as the basis for our cache operations gives us the required performance for free. Since the stl unordered map allows the user to set the hash function, we just take the hash function provided when the cache is initialized and pass it to the map.
 
-Dynamic resizing as also handled natively by the unordered map. We can pass the desired maximum load factor to the map as an argument when first creating our cache, and the map will resize without lossing data whenever that load factor is reached.
+Part 4: Collision resolution
+The stl unordered_map handles collision automatically, so we don't need to worry about that beyond making sure that we are using the map correctly.
 
-We implemented a FIFO eviction policy by inheriting from the given evictor class. The class contains a std::queue that we use to hold the keys of the next items to be evicted.
-Touching the key simply pushes it onto the back of the queue, and calling the eviction function simply pops the first key off the front, and returns it to the caller.
+Part 5: Dynamic resizing
+The stl unordered_map handles dynamic resizing automatically. Again, this means we don't need to worry about resizing as long as we base our operations on the map. This is a major factor in why we chose to use the stl unordered_map instead of our own map implementation.
 
-Finally, for extra credit we implemented a LRU evictor. To do this, used a doubly-linked list to store the keys in the order of least recently used to most recently used. We then used another instance of std::unordered_map to store pointers to each of the nodes in the linked list. This allowed for constant time access of any node in the list, as well as constant time rearrangement of elements based on which key has just been touched. This workes because we are merely changing what nodes the pointers point to, and at most we have to change a constant number of pointers to rearrange a single element in the list.
+Part 6: Eviction policy
+We implemented a FIFO eviction policy in fifo_evictor.hh and .cc, based on the guidelines suggested in the project description. This evictor uses a std::queue that holds the keys of items in our cache. Touching a key pushes it onto the back of the queue, and calling evict() pops the first key off the front, and returns it to the caller. Since we're using a queue, all of the relevant operations remain constant time. The tests for our FIFO evictor are in test_cache_lib, set to run automatically after our basic tests.
+One (perhaps) notable design choice we made here was to check for overwriting before calling the evictor, which can save unnecessary eviction in the case of an overwrite with Cache::set().
 
-
+Part 7: LRU
+For extra credit we implemented a LRU evictor. It uses a doubly-linked list to store the keys in the order of least recently used (the front of the list) to most recently used (the back of the list). We then used another unordered_map to link keys to the corresponding nodes in the linked list. This gives us constant time access of any node in the list, while the list structure gives us constant time removal and insertion. This lets us use the evictor while keeping all the relevant operations in constant time. The evictor itself stores an unordered_map and a linked list, each with a number of elements equal to the number of items stored in the cache.
