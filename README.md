@@ -1,6 +1,6 @@
 CSCI 389 HW2
 
-Authors: Reilly Cannon and James McCaull
+Authors: Reilly Cannon (reicannon@reed.edu ) and James McCaull (jamccaull@reed.edu)
 
 This repository contains all the required files for this assignment, as well as the extra credit LRU Evictor files. We've included a makefile to make compiling our testing file (test_cache_lib) easier.
 
